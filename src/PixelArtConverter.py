@@ -36,6 +36,6 @@ class PixelArtConverter:
         image = self._kernel_.sweep()
 
         self._image_handler_.save_image(
-            image=self._kernel_.sweep(),
+            image=image,
             image_filepath=self._image_filepath_
         )
