@@ -1,5 +1,5 @@
 """
-    This class represents the Kernel that will be passing over images to condense pixel values.
+This class represents the Kernel that will be passing over images to condense pixel values.
 """
 import os
 import cv2
@@ -24,15 +24,20 @@ class Kernel:
         self._chunk_size_ = chunk_size
 
     def sweep(self):
-        self._condense_pixel_values_(self._image_filepath_)
+        self._condense_pixel_values_()
 
         return  self._image_to_chunks_()
 
-    def _condense_pixel_values_(self, filepath):
+    def _condense_pixel_values_(self):
+        """
+        Blurs a given image by passing an n*n convolutional filter over the image
+        such that n = 2m - 1 for any integer m
+        :param filepath: the path to the image file
+        """
         condensed_image = cv2.blur(self._image_, self._kernel_dimensions_)
         self._save_temp_image_(
             condensed_image=condensed_image,
-            filepath=filepath,
+            image_filepath=self._image_filepath_
         )
 
     def _image_to_chunks_(self):
@@ -64,6 +69,7 @@ class Kernel:
     def _get_most_common_colour_(self, chunk):
         """
         Finds the most common colour in a given image chunk.
+
         :param chunk: A sub-array (image chunk)
         :return: Most frequent colour in the chunk
         """
@@ -76,9 +82,21 @@ class Kernel:
         # Get the most frequent colour
         return colours[np.argmax(counts)]
 
-    def _save_temp_image_(self, condensed_image, filepath):
-        directory, filename = os.path.split(filepath)
-        new_filename = f"../temp/condensed_{filename}"
-        new_filepath = os.path.join(directory, new_filename)
+    def _save_temp_image_(self, condensed_image, image_filepath):
+        """
+        Saves the condensed image to the temp directory within the project.
+
+        :param condensed_image: The blurred image, created by self._condense_pixel_values_()
+        :param image_filepath: The path to the original image file, used to get the image name
+        """
+        directory, filename = os.path.split(image_filepath)
+        root_directory = os.path.dirname(__file__)
+        new_filename = f"condensed_{filename}"
+        new_filepath = os.path.join(
+            root_directory,
+            "assets",
+            "temp",
+            new_filename
+        )
         cv2.imwrite(new_filepath, condensed_image)
         self._temp_image_filepath_ = new_filepath

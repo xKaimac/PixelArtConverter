@@ -1,5 +1,7 @@
 """This class handles the uploading and reading of image files """
 import os
+import warnings
+
 import cv2
 import pillow_avif # Must import before PIL for the plugin to work
 from PIL import Image
@@ -59,34 +61,24 @@ class ImageHandler:
         """
         file_exists = False
         filepath_is_absolute = os.path.isabs(image_filepath)
-
+        print(image_filepath)
         if image_filepath is not None:
-            # Pass through the correct filepath depending on whether it's relative or absolute
-            image_directory = os.path.join(
-                "" if filepath_is_absolute else self._root_directory_,
-                self._find_image_directory_(image_filepath
-            ))
-            image_filename = image_filepath.split('/')[-1]
+            image_filename = image_filepath.split('\\')[-1]
             image_format = image_filename[image_filename.rfind('.'):]
 
-            for file in os.listdir(image_directory):
-                if file == image_filename:
-                    file_exists = True
-
-                    if image_format not in self.SUPPORTED_FORMATS:
-                        if image_format == '.avif':
-                            image_filepath = self.convert_avif_to_jpg(
-                                image_filename=image_filename,
-                                image_filepath=image_filepath if filepath_is_absolute
-                                    else os.path.join(
-                                        self._root_directory_,
-                                        image_filepath
-                                )
-                            )
-                        else:
-                            raise Exception("Unsupported image format supplied.")
-
-        if not file_exists:
+            if image_format not in self.SUPPORTED_FORMATS:
+                if image_format == '.avif':
+                    image_filepath = self.convert_avif_to_jpg(
+                        image_filename=image_filename,
+                        image_filepath=image_filepath if filepath_is_absolute
+                            else os.path.join(
+                                self._root_directory_,
+                                image_filepath
+                        )
+                    )
+                else:
+                    warnings.warn(f"WARNING: Unsupported image format for {image_filename}")
+        else:
             raise Exception("Invalid filepath provided. Unable to locate image.")
 
         print("filepath before " + image_filepath)
@@ -100,6 +92,12 @@ class ImageHandler:
             )
 
     def save_image(self, image, image_filepath):
+        """
+        Saves the given image to the output directory within the project.
+
+        :param image: The blurred image, created by self._condense_pixel_values_()
+        :param image_filepath: The path to the original image file, used to get the image name
+        """
         directory, filename = os.path.split(image_filepath)
         new_filename = f"../output/pixelated_{filename}"
         new_filepath = os.path.join(directory, new_filename)
@@ -113,12 +111,13 @@ class ImageHandler:
 
     def convert_avif_to_jpg(self, image_filename, image_filepath):
         """
-            Converts a .avif file to .jpg
-            :param image_filename: name of the image file with no directory information
-            :param image_filepath: path to the image file including the filename
-            :return The filepath of the converted file
+        Converts a .avif file to .jpg
 
-            The usage of this function gets the filename prior to its calling
+        :param image_filename: name of the image file with no directory information
+        :param image_filepath: path to the image file including the filename
+        :return The filepath of the converted file
+
+        The usage of this function gets the filename prior to its calling
         """
         converted_filename = image_filename.split('.')[0] + '.jpg'
         image_directory = self._find_image_directory_(image_filepath)

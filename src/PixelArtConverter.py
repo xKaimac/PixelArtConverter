@@ -1,5 +1,5 @@
 """
-    The class that the user will interact with. This class manages the kernel
+The class that the user will interact with. This class manages the kernel
 """
 from src.ImageHandler import ImageHandler
 from src.Kernel import Kernel
