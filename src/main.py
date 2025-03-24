@@ -4,7 +4,7 @@ from src.PixelArtConverter import PixelArtConverter
 import sys
 
 def main():
-    image_filepath = "../assets/test images/input/"
+    image_filepath = "/Users/kaimac/PycharmProjects/PixelArtConverter/assets/input/test.gif"
     kernel_dimensions = (9, 9)
     scale_factor=0.02
 

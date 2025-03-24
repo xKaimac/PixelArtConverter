@@ -4,10 +4,10 @@ from src.PixelArtConverter import PixelArtConverter
 import sys
 
 def main():
-    image_filepath = r"../../assets/test images/input/image formats"
+    image_filepath = r"../../assets/test images/input/"
     absolute_path = os.path.abspath(image_filepath)
     kernel_dimensions = (9, 9)
-    scale_factor=0.02
+    scale_factor = 0.02
 
     if len(sys.argv) > 1:
         image_filepath = sys.argv[1]
@@ -19,7 +19,6 @@ def main():
         scale_factor = float(sys.argv[3])
 
     filepath_is_directory = os.path.isdir(absolute_path)
-    print(absolute_path)
 
     if filepath_is_directory:
         for file in os.listdir(absolute_path):

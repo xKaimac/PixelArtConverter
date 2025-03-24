@@ -3,15 +3,18 @@ import os
 import warnings
 
 import cv2
+import imageio
+import numpy as np
 import pillow_avif # Must import before PIL for the plugin to work
 from PIL import Image
+
 
 class ImageHandler:
     SUPPORTED_FORMATS = [
         '.jpg', '.jpeg', '.png', '.bmp', '.dib', '.jp2',
         '.webp', '.pbm', '.pgm', '.ppm', '.pxm', '.pnm',
         '.sr', '.ras', '.tiff', '.tif', '.exr', 'hdr',
-        '.pic'
+        '.pic', '.gif'
     ]
     _image_filepath_ = None
     _image_ = None
@@ -20,33 +23,55 @@ class ImageHandler:
     def __init__(self, image_filepath = None):
         if image_filepath is not None:
             self.set_image_filepath(image_filepath)
+
         self._read_image()
 
     def _read_image(self):
         """
-            Read image using OpenCV2
+        Read image using OpenCV2
         """
-        self._image_ = cv2.imread(self._image_filepath_)
+        if self.get_image_format() == '.gif':
+            gif = cv2.VideoCapture(self._image_filepath_)
+            frames = []
+            ret, frame = gif.read()
+            frames.append(frame)
+
+            while ret:
+                ret, frame = gif.read()
+                if not ret:
+                    break
+                frames.append(frame)
+
+            self._image_ = frames
+        else:
+            self._image_ = cv2.imread(self._image_filepath_)
+
         if self._image_ is None:
             raise FileNotFoundError("Image file not found")
 
     def get_image_shape(self):
+        """:returns the image dimensions"""
+        if self.get_image_format() == '.gif':
+            return self._image_[0].shape
+
         return self._image_.shape
 
-    def get_image_type(self):
-        return self._image_filepath_.split('.')[-1]
+    def get_image_format(self):
+        """:returns the file extension of the image"""
+        return self._image_filepath_[self._image_filepath_.rfind('.'):]
 
     def show_image(self):
+        """Opens the image in a new window"""
         cv2.imshow('image', self._image_)
         cv2.waitKey(0)
 
     def _find_image_directory_(self, image_filepath):
         """
-            Determines the type of slashes in the file path,
-            then returns the directory that the file is contained in.
+        Determines the type of slashes in the file path,
+        then returns the directory that the file is contained in.
 
-            :param image_filepath: The path to the image file
-            :return The directory that the image is contained in
+        :param image_filepath: The path to the image file
+        :return The directory that the image is contained in
         """
         forward_slash = image_filepath.find('/') != -1
 
@@ -57,11 +82,10 @@ class ImageHandler:
 
     def set_image_filepath(self, image_filepath):
         """
-            Checks the passed filepath for validity, then sets the value
+        Checks the passed filepath for validity, then sets the value
         """
-        file_exists = False
         filepath_is_absolute = os.path.isabs(image_filepath)
-        print(image_filepath)
+
         if image_filepath is not None:
             image_filename = image_filepath.split('\\')[-1]
             image_format = image_filename[image_filename.rfind('.'):]
@@ -81,8 +105,6 @@ class ImageHandler:
         else:
             raise Exception("Invalid filepath provided. Unable to locate image.")
 
-        print("filepath before " + image_filepath)
-
         if filepath_is_absolute:
             self._image_filepath_ = image_filepath
         else:
@@ -101,12 +123,23 @@ class ImageHandler:
         directory, filename = os.path.split(image_filepath)
         new_filename = f"../output/pixelated_{filename}"
         new_filepath = os.path.join(directory, new_filename)
-        cv2.imwrite(new_filepath, image)
+
+        if self.get_image_format() == '.gif':
+            if isinstance(image, np.ndarray):
+                frames = [cv2.cvtColor(image, cv2.COLOR_BGR2RGB)]
+            elif isinstance(image, list):
+                frames = [cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) for frame in image]
+
+            imageio.mimsave(new_filepath, frames, format="GIF")
+        else:
+            cv2.imwrite(new_filepath, image)
 
     def get_image_filepath(self):
+        """:returns the filepath of the image"""
         return self._image_filepath_
 
     def get_image(self):
+        """:returns the image as a numpy array"""
         return self._image_
 
     def convert_avif_to_jpg(self, image_filename, image_filepath):
