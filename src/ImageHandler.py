@@ -124,6 +124,8 @@ class ImageHandler:
         new_filename = f"../output/pixelated_{filename}"
         new_filepath = os.path.join(directory, new_filename)
 
+        print(f"Saving image to {new_filepath}")
+
         if self.get_image_format() == '.gif':
             if isinstance(image, np.ndarray):
                 frames = [cv2.cvtColor(image, cv2.COLOR_BGR2RGB)]

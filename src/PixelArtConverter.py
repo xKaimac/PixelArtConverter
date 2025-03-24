@@ -3,8 +3,8 @@ The class that the user will interact with. This class manages the kernel
 """
 import cv2
 
-from src.ImageHandler import ImageHandler
-from src.Kernel import Kernel
+from ImageHandler import ImageHandler
+from Kernel import Kernel
 
 class PixelArtConverter:
     _image_handler_ = None
@@ -29,8 +29,8 @@ class PixelArtConverter:
             image_height, image_width, channels = self._image_handler_.get_image_shape(gif=True)
         else:
             image_height, image_width, channels = self._image_handler_.get_image_shape()
+
         chunk_size = int(min(image_width, image_height) * scale_factor)
-        print(f'Chunk size: {chunk_size}')
 
         self._kernel_ = Kernel(
             image=self._image_handler_.get_image(),

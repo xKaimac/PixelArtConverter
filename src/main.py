@@ -1,21 +1,29 @@
 import os
 
-from src.PixelArtConverter import PixelArtConverter
-import sys
+from numpy import require
+
+from PixelArtConverter import PixelArtConverter
+import argparse
 
 def main():
-    image_filepath = "/Users/kaimac/PycharmProjects/PixelArtConverter/assets/input/test.gif"
+    parser = argparse.ArgumentParser(description="Pixel Art Converter")
+    image_filepath = "../assets/input/"
     kernel_dimensions = (9, 9)
     scale_factor=0.02
 
-    if len(sys.argv) > 1:
-        image_filepath = sys.argv[1]
+    # Command line argument setup
+    parser.add_argument('-f', '--filepath', help='Filepath to the image or directory.', default='../assets/input/')
+    parser.add_argument('-k', '--kernel_dimensions', help='The x dimension (integer) of the convolutional kernel. This is always square so just pass through one odd integer value. Higher value is a more condensed starting image.', default=(9,9))
+    parser.add_argument('-s', '--scale_factor', help='Floating point number from 0 - 1. The larger the value the more pixelated the image at the end.', required=False)
 
-    if len(sys.argv) > 2:
-        kernel_dimensions = sys.argv[2]
+    args = parser.parse_args()
 
-    if len(sys.argv) > 3:
-        scale_factor = float(sys.argv[3])
+    # Take values from the user, else default
+    image_filepath = args.filepath
+    kernel_dimensions = (int(args.kernel_dimensions), int(args.kernel_dimensions))
+    scale_factor = float(args.scale_factor)
+
+    print(image_filepath, kernel_dimensions, scale_factor)
 
     filepath_is_directory = os.path.isdir(image_filepath)
 
