@@ -20,8 +20,6 @@ def main():
     kernel_dimensions = (int(args.kernel_dimensions), int(args.kernel_dimensions))
     scale_factor = float(args.scale_factor)
 
-    print(image_filepath, kernel_dimensions, scale_factor)
-
     filepath_is_directory = os.path.isdir(image_filepath)
 
     if filepath_is_directory:

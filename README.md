@@ -31,3 +31,6 @@ A simple tool that turns most image formats (including GIFs) into pixel art.
 - add command line arguments and help interface
 - retain the original framerate  of gifs 
 - Look at mapping the pixel values to the closest 256 value colour palette for a more retro look
+- Try to find a magic number for scaling
+- Get gifs to loop infinitely
+- if the given directory isn't "input", just create an output folder in the passed directory to work with files anywhere
