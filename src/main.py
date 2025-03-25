@@ -7,14 +7,11 @@ import argparse
 
 def main():
     parser = argparse.ArgumentParser(description="Pixel Art Converter")
-    image_filepath = "../assets/input/"
-    kernel_dimensions = (9, 9)
-    scale_factor=0.02
 
     # Command line argument setup
     parser.add_argument('-f', '--filepath', help='Filepath to the image or directory.', default='../assets/input/')
-    parser.add_argument('-k', '--kernel_dimensions', help='The x dimension (integer) of the convolutional kernel. This is always square so just pass through one odd integer value. Higher value is a more condensed starting image.', default=(9,9))
-    parser.add_argument('-s', '--scale_factor', help='Floating point number from 0 - 1. The larger the value the more pixelated the image at the end.', required=False)
+    parser.add_argument('-k', '--kernel_dimensions', help='The x dimension (integer) of the convolutional kernel. This is always square so just pass through one odd integer value. Higher value is a more condensed starting image.', default=9)
+    parser.add_argument('-s', '--scale_factor', help='Floating point number from 0 - 1. The larger the value the more pixelated the image at the end.', default=0.05)
 
     args = parser.parse_args()
 

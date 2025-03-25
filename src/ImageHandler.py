@@ -18,6 +18,7 @@ class ImageHandler:
     ]
     _image_filepath_ = None
     _image_ = None
+    _framerate_ = None
     _root_directory_ = os.path.dirname(__file__)
 
     def __init__(self, image_filepath = None):
@@ -32,6 +33,7 @@ class ImageHandler:
         """
         if self.get_image_format() == '.gif':
             gif = cv2.VideoCapture(self._image_filepath_)
+            self._framerate_ = gif.get(cv2.CAP_PROP_FPS)
             frames = []
             ret, frame = gif.read()
             frames.append(frame)
@@ -132,7 +134,7 @@ class ImageHandler:
             elif isinstance(image, list):
                 frames = [cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) for frame in image]
 
-            imageio.mimsave(new_filepath, frames, format="GIF")
+            imageio.mimsave(new_filepath, frames, format="GIF", fps=self._framerate_)
         else:
             cv2.imwrite(new_filepath, image)
 

@@ -25,10 +25,7 @@ class PixelArtConverter:
         self._image_filepath_ = self._image_handler_.get_image_filepath()
         self._kernel_dimensions_ = kernel_dimensions
 
-        if self._image_format_ == 'gif':
-            image_height, image_width, channels = self._image_handler_.get_image_shape(gif=True)
-        else:
-            image_height, image_width, channels = self._image_handler_.get_image_shape()
+        image_height, image_width, channels = self._image_handler_.get_image_shape()
 
         chunk_size = int(min(image_width, image_height) * scale_factor)
 
