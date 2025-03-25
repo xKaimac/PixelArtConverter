@@ -134,7 +134,7 @@ class ImageHandler:
             elif isinstance(image, list):
                 frames = [cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) for frame in image]
 
-            imageio.mimsave(new_filepath, frames, format="GIF", fps=self._framerate_)
+            imageio.mimsave(new_filepath, frames, format="GIF", fps=self._framerate_, loop=1000)
         else:
             cv2.imwrite(new_filepath, image)
 
