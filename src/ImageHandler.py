@@ -94,7 +94,7 @@ class ImageHandler:
 
             if image_format not in self.SUPPORTED_FORMATS:
                 if image_format == '.avif':
-                    image_filepath = self.convert_avif_to_jpg(
+                    image_filepath = self._convert_avif_to_jpg_(
                         image_filename=image_filename,
                         image_filepath=image_filepath if filepath_is_absolute
                             else os.path.join(
@@ -126,7 +126,7 @@ class ImageHandler:
         new_filename = f"../output/pixelated_{filename}"
         new_filepath = os.path.join(directory, new_filename)
 
-        print(f"Saving image to {new_filepath}")
+        os.mkdir(os.path.join(directory, "..", "output"))
 
         if self.get_image_format() == '.gif':
             if isinstance(image, np.ndarray):
@@ -138,6 +138,8 @@ class ImageHandler:
         else:
             cv2.imwrite(new_filepath, image)
 
+        self._clean_temp_folder_(os.path.join(directory, "..", "temp"))
+
     def get_image_filepath(self):
         """:returns the filepath of the image"""
         return self._image_filepath_
@@ -146,7 +148,7 @@ class ImageHandler:
         """:returns the image as a numpy array"""
         return self._image_
 
-    def convert_avif_to_jpg(self, image_filename, image_filepath):
+    def _convert_avif_to_jpg_(self, image_filename, image_filepath):
         """
         Converts a .avif file to .jpg
 
@@ -164,3 +166,11 @@ class ImageHandler:
         img.save(converted_filepath)
 
         return converted_filepath
+
+    def _clean_temp_folder_(self, directory):
+        for file in os.listdir(directory):
+            file_path = os.path.join(directory, file)
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+
+        os.rmdir(directory)

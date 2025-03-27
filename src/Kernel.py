@@ -115,6 +115,7 @@ class Kernel:
             "temp",
             new_filename
         )
+        os.mkdir(os.path.join(directory, "..", "temp"))
 
         if self._image_format_ == '.gif':
             if isinstance(condensed_image, np.ndarray):
